@@ -104,7 +104,8 @@
 }
 
 .report-image {
-  max-width: 100%;
+  max-width: 70vh;
+  max-height: 70vh;
   height: auto;
   border-radius: 5px;
   margin-top: 10px;
