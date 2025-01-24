@@ -34,11 +34,11 @@ const LandingPage = () => {
         alignItems: 'center',
         color: '#F5F568',
         fontFamily: 'Arial, sans-serif',
-        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+        textShadow: '2px 2px 4px rgba(163, 152, 5, 0.8)',
       }}
     >
       <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '20px' }}>
-        Welcome to Waste Management Goa
+        Welcome To R३ Goa
       </h1>
       <button
         onClick={() => setShowPopup(true)}
@@ -51,10 +51,10 @@ const LandingPage = () => {
           border: 'none',
           borderRadius: '30px',
           cursor: 'pointer',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          boxShadow: '0 4px 8px rgba(8, 7, 7, 0.85)',
           transition: 'all 0.3s ease',
         }}
-        onMouseOver={(e) => (e.target.style.backgroundColor = '#218838')}
+        onMouseOver={(e) => (e.target.style.backgroundColor = '#276110')}
         onMouseOut={(e) => (e.target.style.backgroundColor = '#28a745')}
       >
         Get Started
@@ -84,9 +84,10 @@ const LandingPage = () => {
               width: '400px',
             }}
           >
-            <h2 style={{ color: '#333' }}>Login / Signup</h2>
-            <p style={{ marginBottom: '20px' }}>Sign in with Google to continue</p>
-            <button
+            <h2 style={{ color: '#000000' }}>Login / Signup</h2>
+            <p style={{ marginBottom: '20px',color:'#000000',alignSelf:'center',alignItems:'center' }}>Sign in with Google to continue</p>
+            <center>
+              <button
               onClick={handleGoogleLogin}
               style={{
                 padding: '10px 20px',
@@ -103,9 +104,11 @@ const LandingPage = () => {
                 gap: '10px',
               }}
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google" style={{ width: '25px' }} />
+              <img src="https://th.bing.com/th/id/OIP.flV_HAhkgpxUwwDRW-5p9AHaHa?w=200&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" alt="Google" style={{ width: '25px' }} />
               Sign in with Google
-            </button>
+            </button>  
+            </center>
+            
             <br />
             <button
               onClick={() => setShowPopup(false)}

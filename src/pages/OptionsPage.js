@@ -148,7 +148,8 @@ function OptionsPage() {
               style={{ width: '100%', height: 'auto', borderRadius: '10px' }}
             />
             <h2 style={{ color: '#333' }}>Support Our Cause</h2>
-            <p style={{ color: '#555' }}>Your donation helps us make a difference!</p>
+<p style={{ color: '#555' }}>Every contribution counts—start with just ₹1 and help us create a bigger impact!</p>
+
           </div>
         </div>
       )}
