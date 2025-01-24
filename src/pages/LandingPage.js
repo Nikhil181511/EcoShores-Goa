@@ -32,12 +32,12 @@ const LandingPage = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        color: '#F5F568',
+        color: '#E0C145',
         fontFamily: 'Arial, sans-serif',
-        textShadow: '2px 2px 4px rgba(163, 152, 5, 0.8)',
+        textShadow: '2px 2px 4px rgba(183, 163, 14, 0.8)',
       }}
     >
-      <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '20px' }}>
+      <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '20px',color: '#E0C145' }}>
         Welcome To R३ Goa
       </h1>
       <button

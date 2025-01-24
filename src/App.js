@@ -18,7 +18,7 @@ function App() {
         <Route path="/ReportIssue" element={<ReportIssue />} />
         <Route path="/TruckPath" element={<TruckPath />} />
         <Route path="/Explore" element={<Explore />} />
-        <Route path="/E-Waste" element={<Explore />} />
+        <Route path="/EWaste" element={<EWaste/>} />
       </Routes>
     </Router>
   );
