@@ -3,109 +3,54 @@ import { Link } from 'react-router-dom';
 
 function OptionsPage() {
   return (
-    <div style={{ textAlign: 'center', marginTop: '10%' }}>
-      <h1 style={{ fontFamily: 'Arial, sans-serif', color: '#333' }}>Choose an Option</h1>
+    <div
+      style={{
+        textAlign: 'center',
+        height: '100vh',
+        backgroundImage: `url('/2.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: '#fff',
+        fontFamily: 'Arial, sans-serif',
+        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.7)',
+      }}
+    >
+     
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        <li style={{ margin: '10px 0' }}>
-          <Link
-            to="/CommunityChat"
-            style={{
-              display: 'inline-block',
-              padding: '15px 30px',
-              backgroundColor: '#007bff',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: '5px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              transition: 'background-color 0.3s, transform 0.3s',
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-          >
-            Community Chat
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link
-            to="/ReportIssue"
-            style={{
-              display: 'inline-block',
-              padding: '15px 30px',
-              backgroundColor: '#28a745',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: '5px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              transition: 'background-color 0.3s, transform 0.3s',
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
-          >
-            Report an Issue
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link
-            to="/TruckPath"
-            style={{
-              display: 'inline-block',
-              padding: '15px 30px',
-              backgroundColor: '#ffc107',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: '5px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              transition: 'background-color 0.3s, transform 0.3s',
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
-          >
-            See Truck Path
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link
-            to="/Explore"
-            style={{
-              display: 'inline-block',
-              padding: '15px 30px',
-              backgroundColor: '#17a2b8',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: '5px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              transition: 'background-color 0.3s, transform 0.3s',
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#117a8b'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#17a2b8'}
-          >
-            Explore
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link
-            to="/Ewaste"
-            style={{
-              display: 'inline-block',
-              padding: '15px 30px',
-              backgroundColor: '#6B890F',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: '5px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              transition: 'background-color 0.3s, transform 0.3s',
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
-          >
-            E-Waste
-          </Link>
-        </li>
+        {[
+          { path: '/CommunityChat', label: 'Community Chat', bgColor: '#007bff', hoverColor: '#0056b3' },
+          { path: '/ReportIssue', label: 'Report an Issue', bgColor: '#28a745', hoverColor: '#218838' },
+          { path: '/TruckPath', label: 'See Truck Path', bgColor: '#ffc107', hoverColor: '#e0a800' },
+          { path: '/Explore', label: 'Explore', bgColor: '#17a2b8', hoverColor: '#117a8b' },
+          { path: '/Ewaste', label: 'E-Waste', bgColor: '#6B890F', hoverColor: '#506907' },
+        ].map((item, index) => (
+          <li key={index} style={{ margin: '15px 0' }}>
+            <Link
+              to={item.path}
+              style={{
+                display: 'inline-block',
+                padding: '20px 60px',
+                backgroundColor: item.bgColor,
+                color: '#fff',
+                textDecoration: 'none',
+                borderRadius: '30px',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                boxShadow: '0 6px 10px rgba(0, 0, 0, 0.3)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = item.hoverColor)}
+              onMouseOut={(e) => (e.target.style.backgroundColor = item.bgColor)}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
