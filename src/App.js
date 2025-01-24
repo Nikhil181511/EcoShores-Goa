@@ -6,6 +6,7 @@ import CommunityChat from './pages/CommunityChat';
 import ReportIssue from './pages/ReportIssue';
 import TruckPath from './pages/TruckPath';
 import Explore from './pages/Explore';
+import EWaste from './pages/EWaste';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/ReportIssue" element={<ReportIssue />} />
         <Route path="/TruckPath" element={<TruckPath />} />
         <Route path="/Explore" element={<Explore />} />
+        <Route path="/E-Waste" element={<Explore />} />
       </Routes>
     </Router>
   );
