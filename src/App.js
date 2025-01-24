@@ -11,11 +11,6 @@ import EWaste from './pages/EWaste';
 function App() {
   return (
     <Router>
-      <nav>
-        <ul>
-        </ul>
-      </nav>
-
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/OptionsPage" element={<OptionsPage />} />

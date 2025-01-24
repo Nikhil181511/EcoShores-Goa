@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth, provider, signInWithPopup } from '../firebaseConfig';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+
+  // Handle Google Authentication
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log('User Info:', result.user);
+      alert(`Welcome ${result.user.displayName}!`);
+      setShowPopup(false); // Close popup
+      navigate('/OptionsPage'); // Redirect on success
+    } catch (error) {
+      console.error('Login failed:', error.message);
+      alert('Failed to login. Please try again.');
+    }
+  };
 
   return (
     <div
@@ -25,7 +41,7 @@ const LandingPage = () => {
         Welcome to Waste Management Goa
       </h1>
       <button
-        onClick={() => navigate('/OptionsPage')}
+        onClick={() => setShowPopup(true)}
         style={{
           padding: '15px 40px',
           fontSize: '1.5rem',
@@ -43,6 +59,71 @@ const LandingPage = () => {
       >
         Get Started
       </button>
+
+      {showPopup && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '30px',
+              borderRadius: '10px',
+              textAlign: 'center',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              width: '400px',
+            }}
+          >
+            <h2 style={{ color: '#333' }}>Login / Signup</h2>
+            <p style={{ marginBottom: '20px' }}>Sign in with Google to continue</p>
+            <button
+              onClick={handleGoogleLogin}
+              style={{
+                padding: '10px 20px',
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: '#fff',
+                backgroundColor: '#4285F4',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+              }}
+            >
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google" style={{ width: '25px' }} />
+              Sign in with Google
+            </button>
+            <br />
+            <button
+              onClick={() => setShowPopup(false)}
+              style={{
+                marginTop: '20px',
+                padding: '10px 20px',
+                backgroundColor: '#dc3545',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

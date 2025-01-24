@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { db, collection, addDoc } from '../firebaseConfig';
 import './ReportIssue.css';
 
 const ReportIssue = () => {
@@ -7,9 +9,11 @@ const ReportIssue = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [photo, setPhoto] = useState(null);
+    const [photoURL, setPhotoURL] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Prevent multiple initializations
         if (!document.getElementById('mapContainer').hasChildNodes()) {
             const platform = new window.H.service.Platform({
                 apikey: 'mdunLxyyXHsAMJJAkJ2U1t3n4crZ639MopzKwWi0Dk4', // Replace with your HERE Maps API key
@@ -47,32 +51,49 @@ const ReportIssue = () => {
         }
     }, [marker]);
 
-    const handleSubmit = () => {
+    // Handle form submission
+    const handleSubmit = async () => {
         if (!coordinates || !name || !description) {
             alert('Please fill in all fields and select a location.');
             return;
         }
 
-        const reportData = {
-            name,
-            description,
-            coordinates,
-            photo
-        };
+        try {
+            const reportData = {
+                name,
+                description,
+                coordinates,
+                photoURL: photoURL || '', // Save image URL if uploaded
+                timestamp: new Date().toISOString(),
+            };
 
-        console.log('Report Submitted:', reportData);
-        localStorage.setItem('reportData', JSON.stringify(reportData));
-        alert('Report submitted successfully!');
+            await addDoc(collection(db, 'reports'), reportData);
+
+            alert('Report submitted successfully!');
+            navigate('/OptionsPage'); // Redirect after submission
+        } catch (error) {
+            console.error('Error saving report:', error);
+            alert('Failed to submit report. Please try again.');
+        }
     };
 
+    // Handle photo upload
     const handlePhotoUpload = (e) => {
-        setPhoto(URL.createObjectURL(e.target.files[0]));
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPhoto(file);
+                setPhotoURL(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     return (
         <div className="report-issue-container">
             <h1>Report an Issue</h1>
-            
+
             <div className="form-group">
                 <label>Name:</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
@@ -86,7 +107,7 @@ const ReportIssue = () => {
             <div className="form-group">
                 <label>Upload Photo:</label>
                 <input type="file" accept="image/*" onChange={handlePhotoUpload} />
-                {photo && <img src={photo} alt="Uploaded" className="preview-image" />}
+                {photoURL && <img src={photoURL} alt="Uploaded" className="preview-image" />}
             </div>
 
             <div id="mapContainer" className="map-container"></div>

@@ -1,221 +1,158 @@
-import React, { useState, useEffect } from 'react';
-import { firestore, auth } from '../firebase';
-import { collection, query, onSnapshot, addDoc, serverTimestamp, doc, getDoc, orderBy } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
-import './comm.css';
+import React, { useEffect, useState } from 'react';
+import { collection, addDoc, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { db } from '../firebaseConfig'; 
+import './CommunityChat.css';
 
 const CommunityChat = () => {
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [groups, setGroups] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [user, setUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [newMessage, setNewMessage] = useState('');
-  const [loadingGroups, setLoadingGroups] = useState(true);
-  const [loadingMessages, setLoadingMessages] = useState(false);
+    const communities = [
+        { id: 1, name: 'Main Announcements' },
+        { id: 2, name: 'NGO Discussions' },
+        { id: 3, name: 'Youth Club' },
+        { id: 4, name: 'Village Ward 1' },
+        { id: 5, name: 'Village Ward 2' },
+        { id: 6, name: 'Reports' } // New "Reports" group
+    ];
 
-  // Authentication and admin check
-  useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        try {
-          const userDoc = await getDoc(doc(firestore, 'users', currentUser.uid));
-          setIsAdmin(userDoc.exists() ? userDoc.data().isAdmin : false);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
+    const [selectedCommunity, setSelectedCommunity] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
+
+    useEffect(() => {
+        if (selectedCommunity) {
+            if (selectedCommunity.name === 'Reports') {
+                // Fetch reports from Firestore
+                const reportQuery = query(collection(db, 'reports'), orderBy('timestamp', 'desc'));
+                const unsubscribe = onSnapshot(reportQuery, (snapshot) => {
+                    const fetchedReports = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    setMessages(fetchedReports);
+                });
+                return () => unsubscribe();
+            } else {
+                // Fetch chat messages
+                const q = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const fetchedMessages = snapshot.docs
+                        .map((doc) => ({ id: doc.id, ...doc.data() }))
+                        .filter((msg) => msg.community === selectedCommunity.name);
+                    setMessages(fetchedMessages);
+                });
+                return () => unsubscribe();
+            }
         }
-      }
-    });
-    return () => unsubscribeAuth();
-  }, []);
+    }, [selectedCommunity]);
 
-  // Fetch community groups
-  useEffect(() => {
-    if (!user) return;
+    // Handle selecting a community
+    const handleSelectCommunity = (community) => {
+        setSelectedCommunity(community);
+    };
 
-    setLoadingGroups(true);
-    const communityRef = doc(firestore, 'communities', 'mainCommunity');
-    const groupsQuery = collection(communityRef, 'groups');
+    // Handle sending a message
+    const handleSendMessage = async () => {
+        if (newMessage.trim() !== '' && selectedCommunity.name !== 'Reports') {
+            try {
+                const messageData = {
+                    community: selectedCommunity.name,
+                    text: newMessage,
+                    sender: selectedCommunity.name === 'Main Announcements' ? 'Announcement' : 'You',
+                    timestamp: new Date()
+                };
 
-    const unsubscribeGroups = onSnapshot(
-      groupsQuery,
-      (snapshot) => {
-        const groupsData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setGroups(groupsData);
-        
-        // Set initial selected group to first announcement group
-        if (!selectedGroup) {
-          const initialGroup = groupsData.find(g => g.type === 'announcement') || groupsData[0];
-          setSelectedGroup(initialGroup);
-        }
-        setLoadingGroups(false);
-      },
-      (error) => {
-        console.error('Error fetching groups:', error);
-        setLoadingGroups(false);
-      }
-    );
-
-    return () => unsubscribeGroups();
-  }, [user]); // Removed selectedGroup from dependencies
-
-  // Fetch group messages
-  useEffect(() => {
-    if (!selectedGroup || !user) return;
-
-    setLoadingMessages(true);
-    const messagesRef = collection(
-      firestore, 
-      'communities', 'mainCommunity', 
-      'groups', selectedGroup.id, 
-      'messages'
-    );
-    
-    const messagesQuery = query(messagesRef, orderBy('timestamp', 'asc'));
-
-    const unsubscribeMessages = onSnapshot(
-      messagesQuery,
-      (snapshot) => {
-        const messagesData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          timestamp: doc.data().timestamp?.toDate()
-        }));
-        setMessages(messagesData);
-        setLoadingMessages(false);
-      },
-      (error) => {
-        console.error('Error fetching messages:', error);
-        setLoadingMessages(false);
-      }
-    );
-
-    return () => unsubscribeMessages();
-  }, [selectedGroup, user]);
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !user || !selectedGroup) return;
-
-    if (selectedGroup.type === 'announcement' && !isAdmin) {
-      alert('Only admins can post in announcements!');
-      return;
-    }
-
-    try {
-      const messagesRef = collection(
-        firestore,
-        'communities', 'mainCommunity',
-        'groups', selectedGroup.id,
-        'messages'
-      );
-      
-      await addDoc(messagesRef, {
-        text: newMessage,
-        senderId: user.uid,
-        senderName: user.displayName || 'Anonymous',
-        timestamp: serverTimestamp()
-      });
-      setNewMessage('');
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
-  };
-
-  return (
-    <div className="community-container">
-      {/* Groups Sidebar */}
-      <div className="groups-sidebar">
-        <h2>Community Groups</h2>
-        {loadingGroups ? (
-          <div className="loading">Loading groups...</div>
-        ) : (
-          <div className="groups-list">
-            {groups.map(group => (
-              <div
-                key={group.id}
-                className={`group-item ${selectedGroup?.id === group.id ? 'active' : ''}`}
-                onClick={() => setSelectedGroup(group)}
-              >
-                <h4>{group.name}</h4>
-                <p>{group.description}</p>
-                {group.type === 'announcement' && <span className="badge">Announcements</span>}
-              </div>
-            ))}
-            {groups.length === 0 && (
-              <div className="no-groups">No groups available</div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Chat Area */}
-      <div className="chat-container">
-        {selectedGroup ? (
-          <>
-            <div className="chat-header">
-              <h3>{selectedGroup.name}</h3>
-              <p>{selectedGroup.description}</p>
-            </div>
-
-            <div className="messages-container">
-              {loadingMessages ? (
-                <div className="loading">Loading messages...</div>
-              ) : (
-                <>
-                  {messages.map(message => (
-                    <div key={message.id} className="message">
-                      <div className="message-header">
-                        <span className="sender">{message.senderName}</span>
-                        <span className="time">
-                          {message.timestamp?.toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                      <div className="message-content">{message.text}</div>
-                    </div>
-                  ))}
-                  {messages.length === 0 && (
-                    <div className="no-messages">No messages yet</div>
-                  )}
-                </>
-              )}
-            </div>
-
-            <form className="message-input" onSubmit={handleSendMessage}>
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder={
-                  selectedGroup.type === 'announcement' && !isAdmin
-                    ? 'Only admins can post here'
-                    : 'Type your message...'
+                if (selectedCommunity.name === 'Main Announcements') {
+                    for (const community of communities) {
+                        if (community.name !== 'Reports') {
+                            await addDoc(collection(db, 'messages'), {
+                                ...messageData,
+                                community: community.name
+                            });
+                        }
+                    }
+                } else {
+                    await addDoc(collection(db, 'messages'), messageData);
                 }
-                disabled={selectedGroup.type === 'announcement' && !isAdmin}
-              />
-              <button
-                type="submit"
-                disabled={!newMessage.trim() || (selectedGroup.type === 'announcement' && !isAdmin)}
-              >
-                Send
-              </button>
-            </form>
-          </>
-        ) : (
-          <div className="no-group-selected">
-            <p>Select a group from the sidebar to start chatting</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+
+                setNewMessage('');
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+    };
+
+    return (
+        <div className="community-chat">
+            <div className="sidebar">
+                <h2>Communities</h2>
+                <ul>
+                    {communities.map((community) => (
+                        <li
+                            key={community.id}
+                            onClick={() => handleSelectCommunity(community)}
+                            className={selectedCommunity?.id === community.id ? 'active' : ''}
+                        >
+                            {community.name}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            <div className="chat-container">
+                {selectedCommunity ? (
+                    <>
+                        <div className="chat-header">
+                            <h3>{selectedCommunity.name}</h3>
+                        </div>
+
+                        <div className="chat-messages">
+                            {selectedCommunity.name === 'Reports' ? (
+                                messages.length > 0 ? (
+                                    messages.map((report) => (
+                                        <div key={report.id} className="report-message">
+                                            <h4>{report.name}</h4>
+                                            <p><strong>Description:</strong> {report.description}</p>
+                                            <p>
+                                                <strong>Location:</strong> {report.coordinates?.lat}, {report.coordinates?.lng}
+                                            </p>
+                                            {report.photoURL ? (
+                                                <img src={report.photoURL} alt="Report" className="report-image" />
+                                            ) : (
+                                                <p>No image available</p>
+                                            )}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No reports available</p>
+                                )
+                            ) : (
+                                messages.map((msg) => (
+                                    <div key={msg.id} className={`chat-message ${msg.sender === 'Announcement' ? 'announcement' : ''}`}>
+                                        <strong>{msg.sender}:</strong> {msg.text}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {selectedCommunity.name !== 'Reports' && (
+                            <div className="chat-input">
+                                <input
+                                    type="text"
+                                    placeholder="Type a message..."
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                />
+                                <button onClick={handleSendMessage}>Send</button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="chat-placeholder">
+                        <p>Select a community to start chatting</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default CommunityChat;
