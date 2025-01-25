@@ -29,14 +29,14 @@ const products = [
     name: 'Garbage Bags',
     price: 228,
     image: '/prod4.jpg',
-    description: 'Biodegradable bags made from plant-based materials'
+    description: 'Biodegradable bags made from plant-based materials(30 bags)'
   },
   {
     id: 5,
     name: 'Safety Gloves',
     price: 176,
     image: '/prod5.jpg',
-    description: 'Reusable rubber gloves for cleaning and gardening'
+    description: 'Reusable rubber gloves for cleaning and gardening(3 pairs)'
   },
   {
     id: 6,
