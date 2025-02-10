@@ -15,37 +15,37 @@ const BeachCleanupSchedule = () => {
     upcoming: [
       {
         id: 1,
-        date: '2024-02-15',
-        location: 'Sunset Beach',
-        volunteers: 25,
+        date: '2025-01-26',
+        location: 'Colva Beach',
+        volunteers: 30,
         status: 'Upcoming'
       }
     ],
     prescheduled: [
       {
         id: 2,
-        date: '2024-05-18', 
+        date: '2025-05-18', 
         location: 'Coral Coast',
         volunteers: 30,
         status: 'Planning'
       },
       {
         id: 3,
-        date: '2024-06-22',
+        date: '2025-06-22',
         location: 'Rocky Shore',
         volunteers: 20,
         status: 'Planning'
       },
       {
         id: 4,
-        date: '2024-07-20',
+        date: '2025-07-20',
         location: 'Marine Cove',
         volunteers: 35,
         status: 'Planning'
       },
       {
         id: 5,
-        date: '2024-08-17',
+        date: '2025-08-17',
         location: 'Sandy Bay',
         volunteers: 25,
         status: 'Planning'
@@ -54,7 +54,7 @@ const BeachCleanupSchedule = () => {
     past: [
       {
         id: 6,
-        date: '2023-11-15',
+        date: '2024-11-15',
         location: 'Harbor Front',
         volunteers: 40,
         status: 'Completed',
@@ -63,7 +63,7 @@ const BeachCleanupSchedule = () => {
       },
       {
         id: 7,
-        date: '2023-09-20',
+        date: '2024-10-20',
         location: 'City Beach',
         volunteers: 35,
         status: 'Completed',

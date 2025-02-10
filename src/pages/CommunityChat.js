@@ -112,8 +112,13 @@ const CommunityChat = () => {
                                             <h4>{report.name}</h4>
                                             <p><strong>Description:</strong> {report.description}</p>
                                             <p>
-                                                <strong>Location:</strong> <p>75.12332,15.5342</p>
+                                                <strong>Location:</strong> {report.coordinates?.lat}, {report.coordinates?.lng}
                                             </p>
+                                            {report.photoURL ? (
+                                                <img src={report.photoURL} alt="Report" className="report-image" />
+                                            ) : (
+                                                <p>No image available</p>
+                                            )}
                                         </div>
                                     ))
                                 ) : (
